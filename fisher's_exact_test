@@ -1,0 +1,91 @@
+library(readxl)
+hivdata <- read_excel("C:/Users/Issariya/Desktop/HIV_part_analysis/Data_analysis_NEW/format_data/1690_data_complete.xlsx")
+View(hivdata)
+
+dim(hivdata)
+
+hivdata$resist_vs_response <- ifelse(hivdata$response==1,
+                               0,
+                               ifelse(hivdata$resist==1,
+                                      1,NA))
+head(hivdata$resist_vs_response)
+str(hivdata$resist_vs_response)
+
+library(MASS)
+pr_index <- grep("^PR_",names(hivdata))
+rt_index <- grep("^RT_",names(hivdata))
+hivdata[,pr_index] <- apply(hivdata[,pr_index],2,as.numeric)
+nvs <- hivdata[!is.na(hivdata$resist_vs_response),]
+pr_results <- data.frame("OR"=NA,"P"=NA)
+for (i in 1:length(pr_index)) {
+  tmp_result <- try(fisher.test(table(nvs[,c("resist_vs_response",names(nvs)[pr_index[i]])])),silent = TRUE)
+  if(class(tmp_result)=="try-error") {
+    pr_results[i,1:2] <- rep(NA,2)
+  } else {
+    pr_results[i,1:2] <- c(tmp_result$estimate,tmp_result$p.value)
+  }
+}
+
+row.names(pr_results) <- names(nvs)[pr_index]
+head(pr_results)
+pr_results <- pr_results[order(pr_results[,"P"]),]
+pr_results[which(pr_results$P < 0.1),]
+pr_results[which(pr_results$P < 0.05),]
+
+# PR_L63T
+mut_PR_L63T_resist <- hivdata[which(hivdata$resist==1 & hivdata$PR_L63T==1),]
+nrow(mut_PR_L63T_resist)
+
+mut_PR_L63T_response <- hivdata[which(hivdata$response==1 & hivdata$PR_L63T==1),]
+nrow(mut_PR_L63T_response)
+
+# PR_M46I
+mut_PR_M46I_resist <- hivdata[which(hivdata$resist==1 & hivdata$PR_M46I==1),]
+nrow(mut_PR_M46I_resist)
+
+mut_PR_M46I_response <- hivdata[which(hivdata$response==1 & hivdata$PR_M46I==1),]
+nrow(mut_PR_M46I_response)
+
+
+#PR_I72T
+mut_PR_I72T_resist <- hivdata[which(hivdata$resist==1 & hivdata$PR_I72T==1),]
+nrow(mut_PR_I72T_resist)
+
+mut_PR_I72T_response <- hivdata[which(hivdata$response==1 & hivdata$PR_I72T==1),]
+nrow(mut_PR_I72T_response)
+
+
+#rt_index <- grep("^RT_",names(hivdata))
+hivdata[,rt_index] <- apply(hivdata[,rt_index],2,as.numeric)
+nvs <- hivdata[!is.na(hivdata$resist_vs_response),]
+rt_results <- data.frame("OR"=NA,"P"=NA)
+for (i in 1:length(rt_index)) {
+  tmp_result <- try(fisher.test(table(nvs[,c("resist_vs_response",names(nvs)[rt_index[i]])])),silent = TRUE)
+  if(class(tmp_result)=="try-error") {
+    rt_results[i,1:2] <- rep(NA,2)
+  } else {
+    rt_results[i,1:2] <- c(tmp_result$estimate,tmp_result$p.value)
+  }
+}
+
+row.names(rt_results) <- names(nvs)[rt_index]
+head(rt_results)
+rt_results <- rt_results[order(rt_results[,"P"]),]
+rt_results[which(rt_results$P < 0.1),]
+rt_results[which(rt_results$P < 0.05),]
+
+#RT_K184M
+mut_RT_K184M_resist <- hivdata[which(hivdata$resist==1 & hivdata$RT_K184M==1),]
+nrow(mut_RT_K184M_resist)
+
+mut_RT_K184M_response <- hivdata[which(hivdata$response==1 & hivdata$RT_K184M==1),]
+nrow(mut_RT_K184M_response)
+
+#RT_K184V
+mut_RT_K184V_resist <- hivdata[which(hivdata$resist==1 & hivdata$RT_K184V==1),]
+nrow(mut_RT_K184V_resist)
+
+mut_RT_K184V_response <- hivdata[which(hivdata$response==1 & hivdata$RT_K184V==1),]
+nrow(mut_RT_K184V_response)
+
+
