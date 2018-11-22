@@ -11,6 +11,15 @@ hivdata$resist_vs_response <- ifelse(hivdata$response==1,
 head(hivdata$resist_vs_response)
 str(hivdata$resist_vs_response)
 
+# count resistance
+count_resist <- hivdata[which(hivdata$resist_vs_response==1),]
+nrow(count_resist)
+
+# count response
+count_response <- hivdata[which(hivdata$resist_vs_response==0),]
+nrow(count_response)
+
+# fisher's test
 library(MASS)
 pr_index <- grep("^PR_",names(hivdata))
 rt_index <- grep("^RT_",names(hivdata))
